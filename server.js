@@ -41,7 +41,6 @@ app.get("/api/tasks", (req, res, next) => {
 });
 
 app.post("/api/task", (req, res, next) => {
-    console.log("hello")
     var errors=[]
     if (!req.body.name){
         errors.push("No task name specified");
@@ -72,10 +71,24 @@ app.post("/api/task", (req, res, next) => {
     });
 })
 
-app.post("/api/test", (req, res, next) => {
-    console.log("hi", req.body)
-    return res.status(200).send("hello")
-});
+app.delete("/api/task/:id", (req, res, next) => {
+    console.log("DELETE CALLED");
+    errors=[]
+    if (!req.params.id){
+        errors.push("No id specified");
+    }
+    var sql = 'DELETE FROM tasks WHERE id = ?'
+    db.run(sql, req.params.id, function (err, result) {
+        if (err){
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.status(200).json({
+            "message": "success",
+            "id": req.params.id
+        })
+    });
+})
 
 // Default response for any other request
 app.use(function(req, res){
